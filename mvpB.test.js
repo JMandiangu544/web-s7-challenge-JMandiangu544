@@ -1,48 +1,72 @@
-import React from 'react'
-import { render, screen } from '@testing-library/react'
-import '@testing-library/jest-dom'
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 
-describe('Sprint 7 Challenge Learner Tests', () => {
-  /*
-  👉 TASK 1 - Unit Testing of sum function at the bottom of this module
+// Unit Tests for the sum function
+describe('sum function', () => {
+  test('throws an error when no arguments are provided', () => {
+    expect(() => sum()).toThrow('pass valid numbers');
+  });
 
-  Test the following. You can create separate tests or a single test with multiple assertions.
+  test('throws an error when a non-number argument is provided', () => {
+    expect(() => sum(2, 'seven')).toThrow('pass valid numbers');
+  });
 
-    [1] sum() // throws an error 'pass valid numbers'
-    [2] sum(2, 'seven') // throws an error 'pass valid numbers'
-    [3] sum(1, 3) // returns 4
-    [4] sum('1', 2) // returns 3
-    [5] sum('10', '3') // returns 13
-  */
+  test('returns the correct sum when valid numbers are provided', () => {
+    expect(sum(1, 3)).toBe(4);
+  });
 
-  /*
-  👉 TASK 2 - Integration Testing of HelloWorld component at the bottom of this module
+  test('returns the correct sum when one argument is a string', () => {
+    expect(sum('1', 2)).toBe(3);
+  });
 
-  Test the <HelloWorld /> component found below...
-    - using `screen.queryByText` to capture nodes
-    - using `toBeInTheDocument` to assert their existence in the DOM
+  test('returns the correct sum when both arguments are strings', () => {
+    expect(sum('10', '3')).toBe(13);
+  });
+});
 
-    [1] renders a link that reads "Home"
-    [2] renders a link that reads "About"
-    [3] renders a link that reads "Blog"
-    [4] renders a text that reads "The Truth"
-    [5] renders a text that reads "JavaScript is pretty awesome"
-    [6] renders a text that includes "javaScript is pretty" (use exact = false)
-  */
-  test('you can comment out this test', () => {
-    expect(true).toBe(false)
-  })
-})
+// Integration Tests for the HelloWorld component
+describe('<HelloWorld />', () => {
+  beforeEach(() => {
+    render(<HelloWorld />);
+  });
 
+  test('renders a link that reads "Home"', () => {
+    expect(screen.queryByText('Home')).toBeInTheDocument();
+  });
+
+  test('renders a link that reads "About"', () => {
+    expect(screen.queryByText('About')).toBeInTheDocument();
+  });
+
+  test('renders a link that reads "Blog"', () => {
+    expect(screen.queryByText('Blog')).toBeInTheDocument();
+  });
+
+  test('renders a text that reads "The Truth"', () => {
+    expect(screen.queryByText('The Truth')).toBeInTheDocument();
+  });
+
+  test('renders a text that reads "JavaScript is pretty awesome"', () => {
+    expect(screen.queryByText('JavaScript is pretty awesome')).toBeInTheDocument();
+  });
+
+  test('renders a text that includes "javaScript is pretty" (case insensitive)', () => {
+    expect(screen.queryByText(/javaScript is pretty/i, { exact: false })).toBeInTheDocument();
+  });
+});
+
+// Sum function implementation
 function sum(a, b) {
-  a = Number(a)
-  b = Number(b)
+  a = Number(a);
+  b = Number(b);
   if (isNaN(a) || isNaN(b)) {
-    throw new Error('pass valid numbers')
+    throw new Error('pass valid numbers');
   }
-  return a + b
+  return a + b;
 }
 
+// HelloWorld component implementation
 function HelloWorld() {
   return (
     <div>
@@ -59,5 +83,5 @@ function HelloWorld() {
         </section>
       </main>
     </div>
-  )
+  );
 }
