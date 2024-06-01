@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as yup from 'yup';
 import axios from 'axios';
 
 const validationErrors = {
   fullNameTooShort: 'Full name must be at least 3 characters',
   fullNameTooLong: 'Full name must be at most 20 characters',
-  sizeIncorrect: 'Size must be S or M or L'
+  sizeIncorrect: 'Size must be S, M, or L'
 };
 
 const toppings = [
-  { topping_id: '1', text: 'Pepperoni' },
-  { topping_id: '2', text: 'Green Peppers' },
-  { topping_id: '3', text: 'Pineapple' },
-  { topping_id: '4', text: 'Mushrooms' },
-  { topping_id: '5', text: 'Ham' }
+  { topping_id: 1, text: 'Pepperoni' },
+  { topping_id: 2, text: 'Green Peppers' },
+  { topping_id: 3, text: 'Pineapple' },
+  { topping_id: 4, text: 'Mushrooms' },
+  { topping_id: 5, text: 'Ham' }
 ];
 
 const schema = yup.object().shape({
@@ -32,18 +32,39 @@ export default function Form() {
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
   const [failureMessage, setFailureMessage] = useState('');
+  const [isFormValid, setIsFormValid] = useState(false);
 
-  const handleChange = (event) => {
+  useEffect(() => {
+    const validateForm = async () => {
+      try {
+        await schema.validate(formState, { abortEarly: false });
+        setIsFormValid(true);
+      } catch {
+        setIsFormValid(false);
+      }
+    };
+    validateForm();
+  }, [formState]);
+
+  const handleChange = async (event) => {
     const { name, value, type, checked } = event.target;
     if (type === 'checkbox') {
-      setFormState({
-        ...formState,
+      const toppingId = Number(name);
+      setFormState(prevState => ({
+        ...prevState,
         toppings: checked
-          ? [...formState.toppings, Number(name)]
-          : formState.toppings.filter(topping => topping !== Number(name))
-      });
+          ? [...prevState.toppings, toppingId]
+          : prevState.toppings.filter(topping => topping !== toppingId)
+      }));
     } else {
       setFormState({ ...formState, [name]: value });
+    }
+
+    try {
+      await schema.validateAt(name, { ...formState, [name]: value });
+      setErrors(prevErrors => ({ ...prevErrors, [name]: undefined }));
+    } catch (err) {
+      setErrors(prevErrors => ({ ...prevErrors, [name]: err.message }));
     }
   };
 
@@ -70,8 +91,6 @@ export default function Form() {
       }
     }
   };
-
-  const isFormValid = formState.fullName && formState.size;
 
   return (
     <form onSubmit={handleSubmit}>
@@ -111,9 +130,9 @@ export default function Form() {
         {toppings.map(topping => (
           <label key={topping.topping_id}>
             <input
-              name={topping.topping_id}
+              name={String(topping.topping_id)}
               type="checkbox"
-              checked={formState.toppings.includes(Number(topping.topping_id))}
+              checked={formState.toppings.includes(topping.topping_id)}
               onChange={handleChange}
             />
             {topping.text}<br />
