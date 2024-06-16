@@ -5,14 +5,19 @@ import pizza from './images/pizza.jpg';
 function Home() {
   const navigate = useNavigate();
 
-  const handleClick = () => {
+  const handleImageClick = () => {
     navigate('/order');
   };
 
   return (
     <div>
       <h2>Welcome to Bloom Pizza!</h2>
-      <img alt="order-pizza" style={{ cursor: 'pointer' }} src={pizza} onClick={handleClick} />
+      <img
+        alt="order-pizza"
+        style={{ cursor: 'pointer' }}
+        src={pizza}
+        onClick={handleImageClick}
+      />
     </div>
   );
 }

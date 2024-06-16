@@ -39,7 +39,7 @@ export default function Form() {
       try {
         await schema.validate(formState, { abortEarly: false });
         setIsFormValid(true);
-      } catch {
+      } catch (err) {
         setIsFormValid(false);
       }
     };
@@ -77,7 +77,8 @@ export default function Form() {
     try {
       await schema.validate(formState, { abortEarly: false });
       await axios.post('http://localhost:9009/api/order', formState);
-      setSuccessMessage('Thank you for your order!');
+      const toppingsList = formState.toppings.length > 0 ? ' with toppings' : ' with no toppings';
+      setSuccessMessage(`Thank you for your order, ${formState.fullName}${toppingsList}!`);
       setFormState({ fullName: '', size: '', toppings: [] }); // Clear the form
     } catch (err) {
       if (err.name === 'ValidationError') {
@@ -123,7 +124,7 @@ export default function Form() {
             <option value="L">Large</option>
           </select>
         </div>
-        {errors.size && <div className='error'>{errors.size}</div>}
+        {errors.size && <div className='error'>{ errors.size }</div>}
       </div>
 
       <div className="input-group">
@@ -140,7 +141,7 @@ export default function Form() {
         ))}
       </div>
 
-      <input type="submit" disabled={!isFormValid} />
+      <input disabled={!isFormValid} type="submit" />
     </form>
   );
 }
