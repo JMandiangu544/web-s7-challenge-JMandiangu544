@@ -78,7 +78,7 @@ export default function Form() {
       await schema.validate(formState, { abortEarly: false });
       await axios.post('http://localhost:9009/api/order', formState);
       const toppingsList = formState.toppings.length > 0 ? ' with toppings' : ' with no toppings';
-      setSuccessMessage(`Thank you for your order, ${formState.fullName}${toppingsList}!`);
+      setSuccessMessage(`Thank you for your order, ${formState.fullName}! Your ${formState.size} pizza ${toppingsList} is on the way.`);
       setFormState({ fullName: '', size: '', toppings: [] }); // Clear the form
     } catch (err) {
       if (err.name === 'ValidationError') {
